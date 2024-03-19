@@ -1,0 +1,36 @@
+.list-container {
+    width: 800px;
+    margin: 20px auto;
+  }
+  
+  .list-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .list-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .list-container th,
+  .list-container td {
+    padding: 10px;
+    border: 1px solid black;
+    text-align: left;
+  }
+  
+  .list-container th {
+    background-color: #f2f2f2;
+  }
+  
+  .list-container tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+   
+  .list-container td:hover {
+    background-color: #f2f2f2;
+  }
+
+  
