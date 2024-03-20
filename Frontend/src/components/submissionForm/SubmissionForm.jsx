@@ -54,7 +54,7 @@ const SubmissionForm = () => {
 
     //if no error then this will execute
     try {
-      await axios.post('api/submit', { username, codeLanguage, stdin, sourceCode ,timestamp});
+      await axios.post('https://taskbackend-tushar.onrender.com/api/submit', { username, codeLanguage, stdin, sourceCode ,timestamp});
       console.log('Code snippet submitted successfully');
       setUsername('');
       setCodeLanguage('');

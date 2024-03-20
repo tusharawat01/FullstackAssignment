@@ -9,7 +9,7 @@ const SubmissionList = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await axios.get('/api/submissions');
+        const response = await axios.get('https://taskbackend-tushar.onrender.com/api/submissions');
         setSubmissions(response.data || []);
       } catch (error) {
         console.error('Error fetching submissions:', error);

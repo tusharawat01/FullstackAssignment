@@ -2,12 +2,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
-const Redis = require('ioredis'); // Import Redis library
-const config = require('./config'); // Import the config object
+const cors = require('cors');
+require('dotenv').config();
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
+
+// app.use(cors({
+//   origin: 'https://react-express-sql.netlify.app',
+//   optionsSuccessStatus: 200 
+// }));
+
+app.use(cors());
+
+
 
 // Middleware
 app.use(bodyParser.json());
@@ -15,10 +24,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // MySQL Connection
 const connection = mysql.createConnection({
-  host: config.mysqlHost,
-  user: config.mysqlUser,
-  password: config.mysqlPassword,
-  database: config.mysqlDatabase
+  port: process.env.MYSQL_ADDON_PORT,
+  host: process.env.MYSQL_ADDON_HOST,
+  user: process.env.MYSQL_ADDON_USER,
+  password: process.env.MYSQL_ADDON_PASSWORD,
+  database: process.env.MYSQL_ADDON_DB
 });
 
 // Connect to MySQL
@@ -30,12 +40,16 @@ connection.connect(err => {
   console.log('Connected to MySQL Database');
 });
 
-// Redis Connection
-// Connect to Redis server
-const redisClient = new Redis({
-  host: config.redisHost,
-  port: config.redisPort
-}); 
+const sql = "CREATE TABLE IF NOT EXISTS submissions (username VARCHAR(50) NOT NULL,code_language VARCHAR(50) NOT NULL,stdin TEXT,source_code TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+connection.query(sql, (error, results) => {
+  if (error) {
+    console.error('Error executing SQL command:', error);
+  } else {
+    console.log('Table created successfully');
+  }
+});
+
+
 
 // API Endpoints
 
@@ -48,7 +62,7 @@ app.post('/api/submit', (req, res) => {
   connection.query(sql, [username, codeLanguage, stdin, sourceCode], (error, result) => {
     if (error) {
       console.error('Error submitting code snippet:', error);
-      res.status(500).json('Error submitting code snippet in backend:', error);
+      res.status(500).json('Error submitting code snippet:', error);
       return;
     }
     console.log('Code snippet submitted successfully');
@@ -56,33 +70,25 @@ app.post('/api/submit', (req, res) => {
   });
 });
 
+// app.get('/',(req,res) =>{
+//   res.send('Server is ready');
+// });
+
 // GET endpoint to fetch all submissions
-app.get('/api/submissions', async (req, res) => {
-  try {
-    // Check if submissions data is cached in Redis
-    const cachedData = await redisClient.get('submissions');
-    if (cachedData) {
-      console.log('Submissions data retrieved from Redis cache');
-      res.json(JSON.parse(cachedData)); // Return cached data
-    } else {
-      // If data is not cached, fetch submissions from MySQL
-      const sql = 'SELECT username, code_language, stdin, LEFT(source_code, 100) AS source_code_preview, timestamp FROM submissions';
-      connection.query(sql, (err, results) => {
-        if (err) {
-          console.error('Error fetching submissions:', err);
-          res.status(500).send('Error fetching submissions in backend');
-          return;
-        }
-        // Cache the fetched data in Redis
-        redisClient.set('submissions', JSON.stringify(results), 'EX', 3600); // Cache expiry time: 1 hour
-        console.log('Submissions data fetched from MySQL and cached in Redis');
-        res.json(results); // Return fetched data
-      });
+app.get('/api/submissions', (req, res) => {
+  // Fetch submissions from MySQL
+  const sql = 'SELECT username, code_language, stdin, LEFT(source_code, 100) AS source_code_preview, timestamp FROM submissions';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching submissions:', err);
+      res.status(500).send('Error fetching submissions in backend');
+      return;
     }
-  } catch (error) {
-    console.error('Error fetching submissions:', error);
-    res.status(500).send('Error fetching submissions in backend');
-  }
+    if(results == null){
+      res.send("empty array");
+    }
+    res.json(results);
+  });
 });
 
 // Start server
