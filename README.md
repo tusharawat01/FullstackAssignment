@@ -25,23 +25,23 @@ This is a web application built with React for the frontend, Express for the bac
 To run this application on your system, follow these steps:
 
 1. Clone the repository:
-    \`\`\`bash
+    \`\`\`
     $ git clone https://github.com/yourusername/yourproject.git
     $ cd yourproject
     \`\`\`
 
 2. Install all dependencies:
-    \`\`\`bash
+    \`\`\`
     $ npm install
     \`\`\`
 
 3. Start the backend:
-    \`\`\`bash
+    \`\`\`
     $ npm start
     \`\`\`
 
 4. Start the frontend:
-    \`\`\`bash
+    \`\`\`
     $ npm run dev
     \`\`\`
 
@@ -50,7 +50,7 @@ To run this application on your system, follow these steps:
 To configure the database:
 
 1. Copy the \`.env.sample\` file to \`.env\`:
-    \`\`\`bash
+    \`\`\`
     $ cp .env.sample .env
     \`\`\`
 
